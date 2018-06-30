@@ -1,0 +1,12 @@
+{
+    "name": "zmhfly/framework",
+    "description": null,
+    "type": "library",
+    "authors": [
+        {
+            "name": "zmfly",
+            "email": "zmhfly8@foxmail.com"
+        }
+    ],
+    "require": {}
+}
