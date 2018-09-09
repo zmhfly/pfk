@@ -1,0 +1,24 @@
+{
+    "name" : "zmhfly/framework",
+    "description" : "a php framework",
+    "minimum-stability" : "stable",
+    "license" : "proprietary",
+    "authors" : [
+        {
+            "name" : "zmh",
+            "email" : "zmhfly8@foxmail.com"
+        }
+    ],
+    "require" : {
+        "php" : ">=5.4",
+        "monolog/monolog": "^2.0@dev"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "Framework\\" : "src/"
+        },
+        "files" : [
+            "src/functions.php"
+        ]
+    }
+}
