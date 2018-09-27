@@ -26,9 +26,6 @@ class Session
                 throw new \Exception("未找到驱动".$class);
             }
         }
-        session_start();
-        $_SESSION['aa'] = '666';
-        print_r($_SESSION);exit();
         // 直接启动session
         $this->start();
     }
