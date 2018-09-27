@@ -8,6 +8,7 @@ namespace Framework;
 use Framework\Config\Config;
 use Framework\Controllers\Controller;
 use Framework\Di\Di;
+use Framework\Logger\Logger;
 use Framework\Providers\Abstracts\ServiceProviderInterface;
 use Framework\Providers\ConfigProvider;
 use Framework\Providers\LoggerProvider;
@@ -25,6 +26,7 @@ use Framework\Session\Session;
  * @property Router  $router
  * @property Request $request
  * @property Session $session
+ * @property Logger  $logger
  * @package Framework
  */
 class Container extends Di
@@ -110,9 +112,11 @@ class Container extends Di
      * 获取根目录
      * @return mixed
      */
-    public function getBaseDir(){
+    public function getBaseDir()
+    {
         return $this->baseDir;
     }
+
     /**
      * 设置项目路径
      * @return string

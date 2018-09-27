@@ -20,8 +20,8 @@ class Request
 
     public function __construct()
     {
-        $this->pathInfo = $_SERVER['PATH_INFO'];
-        $this->queryString = $_SERVER['QUERY_STRING'];
+        $this->pathInfo = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']: [];
+        $this->queryString = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING']:[];
         $this->get = $_GET;
         $this->post = $_POST;
         $this->getAllHeaders();
