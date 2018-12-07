@@ -15,6 +15,7 @@ use Framework\Router\Response;
  * @property \Framework\Container $di
  * @property Request $request
  * @property Response $response
+ * @property \Monolog\Logger $logger
  * @package Framework\Services
  */
 trait ServiceTrait

@@ -18,6 +18,10 @@ class Request
     private $post;
     private $_header;
 
+    private $_moudle;
+    private $_controller;
+    private $_action;
+
     public function __construct()
     {
         $this->pathInfo = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']: [];
@@ -57,6 +61,12 @@ class Request
         return $this;
     }
 
+    public function get(){
+        return $this->get;
+    }
+    public function post(){
+        return $this->post;
+    }
     public function getPathInfo()
     {
         return $this->pathInfo;
@@ -72,6 +82,33 @@ class Request
         return $this->params;
     }
 
+    public function setModule($module){
+
+        $this->_moudle = $module;
+    }
+    public function getModule(){
+        return $this->_moudle;
+
+    }
+
+    public function setController($controller){
+        $this->_controller = $controller;
+    }
+    /**
+     * 获取当前的控制器
+     * @return mixed
+     */
+    public function getController(){
+        return $this->_controller;
+    }
+
+    public function setAction($action){
+        $this->_action = $action;
+    }
+    public function getAction(){
+        return $this->_action;
+
+    }
     /**
      * @param string $error
      * @param string $raw

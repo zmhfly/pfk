@@ -88,9 +88,9 @@ class Di implements \ArrayAccess
         if (isset($this->_instances[$name])) {
             return $this->_instances[$name];
         }
-        // 没有实例话就初始化
         if (!isset($this->_bindings[$name])) {
-            throw new \Exception("未找到要实例化的类2");
+//            return null;
+            throw new \Exception("未找到要实例化的类");
         }
         $concrete = $this->_bindings[$name];//对象具体注册内容
         $obj = null;

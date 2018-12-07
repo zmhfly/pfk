@@ -33,8 +33,6 @@ class Logger
         $dir = $this->_config["logPath"].DIRECTORY_SEPARATOR.$name.DIRECTORY_SEPARATOR;
         $date = date("Y-m-d", time());
         $logFile = $dir.$date.'.log';
-//        @mkdir("/Users/zong/TEST_WWW/zmhfly/naiwa/log/aa",0777,true);
-
         // 实例化monolog
         $logger = new mLogger($name);
 

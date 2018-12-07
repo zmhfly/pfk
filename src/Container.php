@@ -6,6 +6,7 @@
 namespace Framework;
 
 use Framework\Config\Config;
+use Framework\Controllers\ApiController;
 use Framework\Controllers\Controller;
 use Framework\Di\Di;
 use Framework\Logger\Logger;
@@ -45,7 +46,8 @@ class Container extends Di
         LoggerProvider::class
     ];
     protected $_deafult = [
-        Controller::class
+        Controller::class,
+        ApiController::class
     ];
 
     public function __construct()
@@ -62,6 +64,9 @@ class Container extends Di
             // 解析路由
             $router = $this->router->parse();
             //将返回的变量 添加到request
+            $this->request->setModule($router['m']);
+            $this->request->setController($router['c']);
+            $this->request->setAction($router['a']);
             $this->request->setParams($router['params']);
             // 初始化session
             // 前置操作

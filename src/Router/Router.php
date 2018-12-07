@@ -35,6 +35,7 @@ class Router
     public function pathInfo()
     {
         $data = [
+            "n"=>ucfirst($this->_config->getValue("defaultNameSapce")),
             'm' => ucfirst($this->_config->getValue("defaultModule")),
             'c' => ucfirst($this->_config->getValue("defaultController")),
             'a' => $this->_config->getValue("defaultMethod"),
@@ -52,13 +53,20 @@ class Router
                     $data['m'] = ucfirst($uri[1]);
                     break;
                 case 2:
-                    $data['c'] = ucfirst($uri[1]);
-                    $data['a'] = $uri[2];
+                    $data['m'] = ucfirst($uri[1]);
+                    $data['c'] = ucfirst($uri[2]);
                     break;
-                default:
+                case 3:
                     $data['m'] = ucfirst($uri[1]);
                     $data['c'] = ucfirst($uri[2]);
                     $data['a'] = $uri[3];
+                    break;
+                default:
+                    $data['n'] = ucfirst($uri[1]);
+                    $data['m'] = ucfirst($uri[2]);
+                    $data['c'] = ucfirst($uri[3]);
+                    $data['a'] = $uri[4];
+                    array_shift($uri);
                     array_shift($uri);
                     array_shift($uri);
                     array_shift($uri);
@@ -79,7 +87,7 @@ class Router
     public function dispatcher()
     {
         if (is_array($this->routerData)) {
-            $controller = $this->_config->getValue("defaultNameSapce")."\\".$this->routerData['m']."\\".$this->_config->getValue("defaultControllerPath")."\\".$this->routerData['c']."Controller";
+            $controller = $this->routerData["n"]."\\".$this->routerData['m']."\\".$this->_config->getValue("defaultControllerPath")."\\".$this->routerData['c']."Controller";
             $controller = new $controller();
             $action = $this->routerData['a'];
             if ($controller && method_exists($controller, $action)) {

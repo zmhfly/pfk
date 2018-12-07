@@ -17,7 +17,7 @@ class Session
         // 获取session 驱动
         $this->_config = $config;
         $session = $this->_config->getValue('session');
-        if (!empty($session['type'])) {
+        if (!empty($session['type']) && $session['type'] == "redis") {
             $redis = $session['redis'] ?: $this->_config->getValue("redis");
             // 读取session驱动
             $class = false !== strpos($session['type'], '\\') ? $session['type'] : '\\Framework\Session\drivers\\'.ucwords($session['type']);

@@ -11,13 +11,20 @@ return [
     "defaultControllerPath" => "Controllers",
     "defaultController" => "Index",
     "defaultMethod" => "index",
+    "template" => [
+        "layout" => false,
+        "suffix"=>"php",
+        "templatePathRoot" => "../views",
+        "layoutPath"=>"../views/layout.php",
+        "layoutItem"=>"__REPLACE__"
+    ],
     // 日志目录
     "logPath" => "log",
     // 路由相关
     "routeType" => "pathInfo",
     //session 相关配置
     "session" => [
-        "type" => "redis",
+        "type" => "file",
         "redis" => [
             // redis主机
             'host' => '127.0.0.1',
