@@ -87,13 +87,34 @@ class Response
      */
     protected $charset = 'utf-8';
     protected $_header = [];
+    protected $_data = [];
+    protected $_httpCode = self::HTTP_SERVICE_UNAVAILABLE;
+    protected $_returnData = "";
 
-    protected function getContent()
+    public function setData($data)
     {
-        return [];
+
+        $this->_data = array_merge($this->_data, $data);
     }
 
+    public function getData()
+    {
+        return $this->_data;
+    }
 
+    public function getContent()
+    {
+        return $this->_returnData;
+    }
+
+    public function getHttpCode()
+    {
+        return $this->_httpCode;
+    }
+
+    public function setHttpCode(){
+        http_response_code($this->_httpCode);
+    }
     /**
      * @param $contentType
      *
@@ -102,30 +123,56 @@ class Response
     public function withContentType($contentType)
     {
         $this->withHeader('Content-Type', $contentType);
-
         return $this;
     }
+
     public function withHeader($name, $value)
     {
-        $this->_header[strtolower($name)] = [$value];
-
+        $this->_header[strtolower($name)] = $value;
         return $this;
     }
-    protected function setHeader(){
-        foreach ($this->_header as $k=>$v){
-            header($k,$v);
+
+    protected function setHeader()
+    {
+        foreach ($this->_header as $k => $v) {
+            header($k.":".$v);
         }
     }
+
+    public function getHeader()
+    {
+        return $this->_header;
+    }
+
     public function toJson()
     {
         $this->withContentType('application/json; charset=UTF-8');
-        $this->setHeader();
-        return json_encode($this->getContent(),JSON_UNESCAPED_UNICODE);
+        $this->_returnData = json_encode($this->getData(), JSON_UNESCAPED_UNICODE);
+        return $this;
     }
 
-    public function toXml()
+    //    public function toXml()
+    //    {
+    //        $this->withContentType("text/xml; charset=UTF-8");
+    //    }
+    public function send()
     {
-        $this->withContentType("text/xml; charset=UTF-8");
+        $this->_httpCode = self::HTTP_OK;
+        $this->setHeader();
+        $this->setHttpCode();
+
+        echo json_encode([
+            'errno' => (string) 0,
+            'error' => (string) "",
+            'dataType' => "json",
+            'data' =>  $this->_returnData,
+        ]);
     }
 
+    public function withError(){
+        $this->_httpCode = self::HTTP_OK;
+        $this->setHttpCode();
+        $this->_returnData = "异常";
+        return $this;
+    }
 }

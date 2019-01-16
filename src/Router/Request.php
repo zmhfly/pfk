@@ -11,30 +11,44 @@ namespace Framework\Router;
  */
 class Request
 {
-    private $pathInfo;
-    private $queryString;
-    private $params;
-    private $get;
-    private $post;
-    private $_header;
-
+    /**
+     * 运行方式
+     * @var string
+     */
+    public $runType;
+    public $pathInfo;
+    public $queryString;
+    public $params;
+    public $get;
+    public $post;
+    public $rowbody;
+    public $_header;
     private $_moudle;
     private $_controller;
     private $_action;
 
-    public function __construct()
+    public function __construct($runType)
     {
-        $this->pathInfo = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']: [];
-        $this->queryString = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING']:[];
-        $this->get = $_GET;
-        $this->post = $_POST;
+        $this->runType = $runType;
+        $this->initRequest();
+        $this->setRowBody();
         $this->getAllHeaders();
+    }
+
+    public function initRequest()
+    {
+        if ($this->runType == "web") {
+            $this->pathInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : [];
+            $this->queryString = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : [];
+            $this->get = $_GET;
+            $this->post = $_POST;
+        }
     }
 
     public function setParams($params)
     {
-        $this->get = array_merge($this->get,$params);
-        $this->post = array_merge($this->post,$params);
+        $this->get = array_merge($this->get, $params);
+        $this->post = array_merge($this->post, $params);
         $this->params = $params;
         return $this;
     }
@@ -42,6 +56,18 @@ class Request
     public function setPathInfo($pathInfo)
     {
         $this->pathInfo = $pathInfo;
+        return $this;
+    }
+
+    public function setGet($get)
+    {
+        $this->get = $get ?:[];
+        return $this;
+    }
+
+    public function setPost($post)
+    {
+        $this->post = $post?:[];
         return $this;
     }
 
@@ -61,12 +87,16 @@ class Request
         return $this;
     }
 
-    public function get(){
+    public function get()
+    {
         return $this->get;
     }
-    public function post(){
+
+    public function post()
+    {
         return $this->post;
     }
+
     public function getPathInfo()
     {
         return $this->pathInfo;
@@ -82,33 +112,41 @@ class Request
         return $this->params;
     }
 
-    public function setModule($module){
+    public function setModule($module)
+    {
 
         $this->_moudle = $module;
     }
-    public function getModule(){
-        return $this->_moudle;
 
+    public function getModule()
+    {
+        return $this->_moudle;
     }
 
-    public function setController($controller){
+    public function setController($controller)
+    {
         $this->_controller = $controller;
     }
+
     /**
      * 获取当前的控制器
      * @return mixed
      */
-    public function getController(){
+    public function getController()
+    {
         return $this->_controller;
     }
 
-    public function setAction($action){
+    public function setAction($action)
+    {
         $this->_action = $action;
     }
-    public function getAction(){
-        return $this->_action;
 
+    public function getAction()
+    {
+        return $this->_action;
     }
+
     /**
      * @param string $error
      * @param string $raw
@@ -135,7 +173,12 @@ class Request
      */
     public function getRawBody()
     {
-        return file_get_contents("php://input");
+        return $this->rowbody;
+    }
+
+    public function setRowBody($body = '')
+    {
+        return $body ?: file_get_contents("php://input");
     }
 
     /**
@@ -147,7 +190,7 @@ class Request
      *
      * @return bool
      */
-    private function generageRawBody(& $data, $body, $assoc = false)
+    private function generageRawBody(&$data, $body, $assoc = false)
     {
         $data = json_decode($body, $assoc);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -181,9 +224,11 @@ class Request
         return $data;
     }
 
-    public function getHeader($name){
-        return $this->_header[$name]?:"";
+    public function getHeader($name)
+    {
+        return $this->_header[$name] ?: "";
     }
+
     /**
      * 计算HTTP请求类型
      * @return string
@@ -200,13 +245,15 @@ class Request
                 $returnMethod = strtoupper($overrideMethod);
             }
         }
-
         return $returnMethod;
     }
+
     /**
      * 获取客户端IP地址
+     *
      * @param integer $type 返回类型 0 返回IP地址 1 返回IPV4地址数字
      * @param boolean $adv 是否进行高级模式获取（有可能被伪装）
+     *
      * @return mixed
      */
     public function getIp($type = 0, $adv = true)
@@ -224,17 +271,23 @@ class Request
                     unset($arr[$pos]);
                 }
                 $ip = trim(current($arr));
-            } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+            } else if (isset($_SERVER['HTTP_CLIENT_IP'])) {
                 $ip = $_SERVER['HTTP_CLIENT_IP'];
-            } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+            } else if (isset($_SERVER['REMOTE_ADDR'])) {
                 $ip = $_SERVER['REMOTE_ADDR'];
             }
-        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+        } else if (isset($_SERVER['REMOTE_ADDR'])) {
             $ip = $_SERVER['REMOTE_ADDR'];
         }
         // IP地址合法验证
         $long = sprintf("%u", ip2long($ip));
-        $ip = $long ? [$ip, $long] : ['0.0.0.0', 0];
+        $ip = $long ? [
+            $ip,
+            $long
+        ] : [
+            '0.0.0.0',
+            0
+        ];
         return $ip[$type];
     }
 
@@ -242,7 +295,8 @@ class Request
      * 是否get请求
      * @return bool
      */
-    public function isGet(){
+    public function isGet()
+    {
         return $this->getMethodReplacement() == "GET";
     }
 
@@ -250,9 +304,11 @@ class Request
      * 是否post 请求
      * @return bool
      */
-    public function isPost(){
+    public function isPost()
+    {
         return $this->getMethodReplacement() == "POST";
     }
+
     /**
      * 是否Ajax请求
      * @return bool

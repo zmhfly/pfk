@@ -12,6 +12,8 @@ class RequestProvider implements ServiceProviderInterface
 {
     public function register(Container $di)
     {
-        return new Request();
+
+        $runType = $di->getRunType();
+        return new Request($runType);
     }
 }

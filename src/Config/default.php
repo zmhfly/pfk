@@ -14,8 +14,8 @@ return [
     "template" => [
         "layout" => false,
         "suffix"=>"php",
-        "templatePathRoot" => "../views",
-        "layoutPath"=>"../views/layout.php",
+        "templatePathRoot" => "views",
+        "layoutPath"=>"layout.php",
         "layoutItem"=>"__REPLACE__"
     ],
     // 日志目录
@@ -58,5 +58,9 @@ return [
         'timeout' => 0,
         // 是否长连接
         'persistent' => true,
+    ],
+    "swoole"=>[
+        "host"=>"127.0.0.1",
+        "port"=>"9910"
     ]
 ];

@@ -49,7 +49,7 @@ class Di implements \ArrayAccess
         }
         // 没有实例话就初始化
         if (!isset($this->_bindings[$name])) {
-            throw new \Exception("未找到要实例化的类");
+            throw new \Exception("1 未找到要实例化的类{$name}");
         }
         $concrete = $this->_bindings[$name];//对象具体注册内容
         $obj = null;
@@ -85,14 +85,15 @@ class Di implements \ArrayAccess
     public function __get($name)
     {
         $params = null;
-        if (isset($this->_instances[$name])) {
-            return $this->_instances[$name];
+        $keyName = strtolower($name);
+        if (isset($this->_instances[$keyName])) {
+            return $this->_instances[$keyName];
         }
-        if (!isset($this->_bindings[$name])) {
+        if (!isset($this->_bindings[$keyName])) {
 //            return null;
-            throw new \Exception("未找到要实例化的类");
+            throw new \Exception("2 未找到要实例化的类{$keyName}");
         }
-        $concrete = $this->_bindings[$name];//对象具体注册内容
+        $concrete = $this->_bindings[$keyName];//对象具体注册内容
         $obj = null;
         //匿名函数方式
         if ($concrete instanceof \Closure) {
@@ -108,7 +109,7 @@ class Di implements \ArrayAccess
         }
         //写入_instances列表，下次直接取回
         if ($obj) {
-            $this->_instances[$name] = $obj;
+            $this->_instances[$keyName] = $obj;
         }
         // 如果实现了DiAwareInterface这个接口，自动注入
         if (is_object($obj)) {

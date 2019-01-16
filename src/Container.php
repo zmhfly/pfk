@@ -18,14 +18,17 @@ use Framework\Providers\ResponseProvider;
 use Framework\Providers\RouterProvider;
 use Framework\Providers\SessionProvider;
 use Framework\Router\Request;
+use Framework\Router\Response;
 use Framework\Router\Router;
 use Framework\Session\Session;
+use Framework\Server\Swoole;
 
 /**
  * Class Container
  * @property Config  $config
  * @property Router  $router
  * @property Request $request
+ * @property Response $response
  * @property Session $session
  * @property Logger  $logger
  * @package Framework
@@ -33,6 +36,7 @@ use Framework\Session\Session;
 class Container extends Di
 {
     protected $baseDir;
+    protected $runType;
     /**
      *  框架一级的服务,在容器初始化的时候注册
      * @var array
@@ -56,28 +60,53 @@ class Container extends Di
         $this->registerServices();
     }
 
-    public function run($baseDir = "")
+    public function run($baseDir = "",$runType = "web")
     {
+        $this->runType = $runType;
         $this->setBaseDir($baseDir);
         $this->registerProviders();
         try {
-            // 解析路由
-            $router = $this->router->parse();
-            //将返回的变量 添加到request
-            $this->request->setModule($router['m']);
-            $this->request->setController($router['c']);
-            $this->request->setAction($router['a']);
-            $this->request->setParams($router['params']);
-            // 初始化session
-            // 前置操作
-            // 分发路由
-            $this->router->dispatcher();
-            // 路由缓存 有需要
-            // 后置操作
+            switch ($runType){
+                case "cli":
+                    break;
+                case "swoole":
+                    $this->runSwoole();
+                    break;
+                case "web":
+                default:
+                    $this->runWeb();
+                    break;
+            }
         } catch(\Exception $e) {
             echo $e->getMessage();
             exit();
         }
+    }
+    public function runWeb(){
+        $this->router->setRequest($this->request);
+        // 解析路由
+        $router = $this->router->parse();
+        //将返回的变量 添加到request
+        $this->request->setModule($router['m']);
+        $this->request->setController($router['c']);
+        $this->request->setAction($router['a']);
+        $this->request->setParams($router['params']);
+        // 初始化session
+        // 前置操作
+        // 分发路由
+
+       $return = $this->router->dispatcher();
+       $return->send();
+        // 路由缓存 有需要
+        // 后置操作
+    }
+    public function runCli(){
+
+    }
+
+    public function runSwoole(){
+        $server = (new Swoole($this->config->getValue("swoole")));
+        $server->start($this);
     }
 
     public function registerProviders()
@@ -176,5 +205,13 @@ class Container extends Di
     public function isTesting()
     {
         return $this->getEnv() === "testing";
+    }
+
+    public function isCli(){
+        return PHP_SAPI == 'cli';
+    }
+
+    public function getRunType(){
+        return $this->runType;
     }
 }

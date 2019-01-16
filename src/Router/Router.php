@@ -15,10 +15,19 @@ class Router
 {
     protected $_config;
     protected $routerData;
+    /**
+     * @var Request
+     */
+    protected $request;
 
     public function __construct(Config $config)
     {
         $this->_config = $config;
+    }
+
+    public function setRequest(Request $request)
+    {
+        $this->request = $request;
     }
 
     // 解析路由
@@ -35,14 +44,16 @@ class Router
     public function pathInfo()
     {
         $data = [
-            "n"=>ucfirst($this->_config->getValue("defaultNameSapce")),
+            "n" => ucfirst($this->_config->getValue("defaultNameSapce")),
             'm' => ucfirst($this->_config->getValue("defaultModule")),
             'c' => ucfirst($this->_config->getValue("defaultController")),
             'a' => $this->_config->getValue("defaultMethod"),
             'params' => []
         ];
-        if (isset($_SERVER['PATH_INFO'])) {
-            $uri = parse_url($_SERVER['PATH_INFO'], PHP_URL_PATH);
+        if ($this->request->getPathInfo()) {
+
+            // if (isset($_SERVER['PATH_INFO'])) {
+            $uri = parse_url($this->request->getPathInfo(), PHP_URL_PATH);
             $uri = explode("/", $uri);
             $uri = array_filter($uri); //去空数组
             $count = count($uri); //传递过来的参数个数
@@ -91,10 +102,11 @@ class Router
             $controller = new $controller();
             $action = $this->routerData['a'];
             if ($controller && method_exists($controller, $action)) {
-                call_user_func([
-                    $controller,
-                    $action
-                ], $this->routerData['params']);
+              return  $controller->$action();
+//                call_user_func([
+//                    $controller,
+//                    $action
+//                ], $this->routerData['params']);
             } else {
                 throw new \Exception("方法:".$action." 不存在");
             }

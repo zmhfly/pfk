@@ -26,6 +26,8 @@ class View extends DiAwareAbstract
      * @var string
      */
     protected $_templatePath;
+
+    protected $_templatePathRoot;
     /**
      * 是否启用布局
      * @var bool
@@ -38,11 +40,13 @@ class View extends DiAwareAbstract
     protected $_layoutPath = "";
     protected $_data = [];
 
-    public function __construct($config)
+    protected $_returnData = "";
+    public function __construct($baseDir,$config)
     {
         $this->_config = $config;
         $this->_layout = $config['layout'];
         $this->_layoutPath = $config['layoutPath'];
+        $this->_templatePathRoot = $baseDir."/".$config['templatePathRoot'];
     }
 
     public function setTemplatePath($path)
@@ -53,7 +57,7 @@ class View extends DiAwareAbstract
     // 设置layout 布局
     public function layout($layout)
     {
-        $this->_layoutPath = is_bool($layout) ? $this->_config['layoutPath'] : $layout;
+        $this->_layoutPath = is_bool($layout) ? $this->_templatePathRoot .DS.$this->_config['layoutPath'] : $layout;
         $this->_layout = is_bool($layout) ? $layout : false;
     }
 
@@ -66,22 +70,34 @@ class View extends DiAwareAbstract
     public function assign($data = [], $path = "")
     {
         $this->_data = array_merge($this->_data, $data);
-        $this->display($path);
+        return $this->display($path);
     }
 
     public function display($path = "")
     {
         $this->_templatePath = $path ? $path : $this->_templatePath;
-        header("Content-type: text/html; charset=utf-8");
+        ob_start();
         if ($this->_layout) {
             $this->data([
                 $this->_config['layoutItem'] => $this->_config["templatePathRoot"].DS.$this->_templatePath.".".$this->_config['suffix']
             ]);
             extract($this->_data);
-            include $this->_config['layoutPath'];
+            include $this->_templatePathRoot .DS.$this->_config['layoutPath'];
         } else {
             extract($this->_data);
-            include $this->_config["templatePathRoot"].DS.$this->_templatePath.".".$this->_config['suffix'];
+            include $this->_templatePathRoot.DS.$this->_templatePath.".".$this->_config['suffix'];
         }
+        $this->_returnData = ob_get_clean();
+        return $this;
     }
+
+
+    public function getContent(){
+        return $this->_returnData;
+    }
+    public function send(){
+        header("Content-type: text/html; charset=utf-8");
+        echo $this->_returnData;
+    }
+
 }

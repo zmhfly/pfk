@@ -41,9 +41,9 @@ class Config
     {
         if (is_file($name)) {
             $includeFile = $name;
-        } else if (is_file($configFile = $this->configPath.DS.$this->appEnv.DS.$name.'.php')) {
-            $includeFile = $configFile;
         } else if (is_file($configFile = $this->configPath.DS.$name.'.php')) {
+            $includeFile = $configFile;
+        } else if (is_file($configFile = $this->defaultPath.DS.$name.'.php')) {
             $includeFile = $configFile;
         } else {
             throw new \Exception('Config file '.$name.' no exist');
