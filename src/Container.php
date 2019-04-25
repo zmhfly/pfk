@@ -12,6 +12,7 @@ use Framework\Di\Di;
 use Framework\Logger\Logger;
 use Framework\Providers\Abstracts\ServiceProviderInterface;
 use Framework\Providers\ConfigProvider;
+use Framework\Providers\DbProvider;
 use Framework\Providers\LoggerProvider;
 use Framework\Providers\RequestProvider;
 use Framework\Providers\ResponseProvider;
@@ -47,7 +48,8 @@ class Container extends Di
         RequestProvider::class,
         ResponseProvider::class,
         SessionProvider::class,
-        LoggerProvider::class
+        LoggerProvider::class,
+        DbProvider::class
     ];
     protected $_deafult = [
         Controller::class,

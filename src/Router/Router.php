@@ -34,7 +34,7 @@ class Router
     public function parse()
     {
         $roterData = [];
-        if ($this->_config->getValue("routeType") == 'pathInfo') {
+        if ($this->_config->get("routeType") == 'pathInfo') {
             $roterData = $this->pathInfo();
         }
         $this->routerData = $roterData;
@@ -44,10 +44,10 @@ class Router
     public function pathInfo()
     {
         $data = [
-            "n" => ucfirst($this->_config->getValue("defaultNameSapce")),
-            'm' => ucfirst($this->_config->getValue("defaultModule")),
-            'c' => ucfirst($this->_config->getValue("defaultController")),
-            'a' => $this->_config->getValue("defaultMethod"),
+            "n" => ucfirst($this->_config->get("defaultNameSapce")),
+            'm' => ucfirst($this->_config->get("defaultModule")),
+            'c' => ucfirst($this->_config->get("defaultController")),
+            'a' => $this->_config->get("defaultMethod"),
             'params' => []
         ];
         if ($this->request->getPathInfo()) {
@@ -98,7 +98,7 @@ class Router
     public function dispatcher()
     {
         if (is_array($this->routerData)) {
-            $controller = $this->routerData["n"]."\\".$this->routerData['m']."\\".$this->_config->getValue("defaultControllerPath")."\\".$this->routerData['c']."Controller";
+            $controller = $this->routerData["n"]."\\".$this->routerData['m']."\\".$this->_config->get("defaultControllerPath")."\\".$this->routerData['c']."Controller";
             $controller = new $controller();
             $action = $this->routerData['a'];
             if ($controller && method_exists($controller, $action)) {

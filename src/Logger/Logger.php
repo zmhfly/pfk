@@ -15,9 +15,11 @@ class Logger
         'logPath' => __DIR__
     ];
 
-    public function __construct($config)
+    public function __construct($config = [])
     {
-        $this->_config = $config;
+        if($config){
+            $this->_config = $config;
+        }
     }
 
     public function __call($name, $args)
